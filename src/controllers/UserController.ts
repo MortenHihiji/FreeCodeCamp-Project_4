@@ -1,6 +1,7 @@
 import express from 'express';
+import bcrypt from 'bcrypt';
+
 import { UserModel } from '../Models';
-import { IUser } from '../Models/User';
 import { createJWTToken } from '../utils';
 
 class UserController {
@@ -56,28 +57,26 @@ class UserController {
       password: req.body.password,
     };
 
-    UserModel.findOne({ email: postData.email }, (err: any, user: IUser) => {
+    UserModel.findOne({ email: postData.email }, (err: any, user: any) => {
       if (err) {
         return res.status(404).json({
           message: 'User not found',
         });
       }
 
-      if (user.password === postData.password) {
+      if (bcrypt.compareSync(postData.password, user.password)) {
         const token = createJWTToken(user);
 
-        res.json({
+        return res.json({
           status: 'success',
           token,
         });
       } else {
-        res.json({
+        return res.json({
           status: 'error',
           message: 'Incorrect password or email',
         });
       }
-
-      res.json(user);
     });
   }
 }

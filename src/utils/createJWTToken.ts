@@ -6,7 +6,7 @@ interface ILoginData {
   password: string;
 }
 
-const createJWTToken = (user: ILoginData) => {
+const createJWTToken = (user: any) => {
   let token = jwt.sign(
     {
       data: reduce(
