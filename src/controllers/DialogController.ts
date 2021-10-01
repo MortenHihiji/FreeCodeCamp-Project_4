@@ -2,13 +2,12 @@ import express from 'express';
 import { DialogModel, MessageModel } from '../Models';
 
 class DialogController {
-  index(req: express.Request, res: express.Response) {
-    const authorId: any = '613c8baf85dd1f194079e5e1';
+  index(req: any, res: express.Response) {
+    const authorId = req.user._id;
 
-    DialogModel.findOne({ author: authorId })
+    DialogModel.find({ author: authorId })
       .populate(['author', 'partner'])
       .exec(function (err, dialogs) {
-        console.log(err);
         if (err) {
           return res.status(404).json({
             message: 'Dialogs not found',

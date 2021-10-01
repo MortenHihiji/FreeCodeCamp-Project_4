@@ -11,7 +11,7 @@ const checkAuth = (req: any, res: any, next: any) => {
 
   verifyJWTToken(token)
     .then((user: any) => {
-      req.user = user;
+      req.user = user.data._doc;
       next();
     })
     .catch((err) => {

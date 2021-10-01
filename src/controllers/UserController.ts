@@ -1,12 +1,33 @@
 import express from 'express';
+import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 
 import { UserModel } from '../Models';
 import { createJWTToken } from '../utils';
 
 class UserController {
+  // constructor() {
+  //     io.on("connection", function(socket: any) {
+  //         socket.on('', function(obj: any) {
+  //             ...
+  //         })
+  //     })
+  // }
+
   show(req: express.Request, res: express.Response) {
     const id: string = req.params.id;
+    UserModel.findById(id, (err: any, user: any) => {
+      if (err) {
+        return res.status(404).json({
+          message: 'User not found',
+        });
+      }
+      res.json(user);
+    });
+  }
+
+  getMe(req: any, res: express.Response) {
+    const id: string = req.user._id;
     UserModel.findById(id, (err: any, user: any) => {
       if (err) {
         return res.status(404).json({
