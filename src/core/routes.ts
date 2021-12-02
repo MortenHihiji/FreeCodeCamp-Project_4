@@ -1,17 +1,21 @@
 import bodyParser from 'body-parser';
 import express from 'express';
-import io from 'socket.io';
+import socket from 'socket.io';
 import { updateLastSeen, checkAuth } from '../middlewares';
 import { loginValidation } from '../utils/validations';
 
-import { UserController, DialogController, MessageController } from '../controllers';
+import { UserCtrl, DialogCtrl, MessageCtrl } from '../controllers';
 
-const routes = (app: express.Express, io?: io.Socket) => {
+const createRoutes = (app: express.Express, io: socket.Server) => {
+  const UserController = new UserCtrl(io);
+  const DialogController = new DialogCtrl(io);
+  const MessageController = new MessageCtrl(io);
+
   app.use(bodyParser.json());
   app.use(updateLastSeen);
   app.use(checkAuth);
 
-  app.get('/user/me', UserController.getMe.bind(null, io));
+  app.get('/user/me', UserController.getMe);
   app.get('/user/:id', UserController.show);
   app.delete('/user/:id', UserController.delete);
   app.post('/user/registration', UserController.create);
@@ -26,4 +30,4 @@ const routes = (app: express.Express, io?: io.Socket) => {
   app.delete('/messages/:id', MessageController.delete);
 };
 
-export default routes;
+export default createRoutes;

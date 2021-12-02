@@ -1,27 +1,18 @@
 import express from 'express';
-import socket from 'socket.io';
 import { createServer } from 'http';
 import dotenv from 'dotenv';
 
 import './core/db';
 import createRoutes from './core/routes';
+import createSocket from './core/socket';
 
 const app = express();
 const http = createServer(app);
-const io = require('socket.io')(http);
+const io = createSocket(http);
 
 dotenv.config();
 
-createRoutes(app);
-
-io.on('connection', function (socket: any) {
-  console.log('Connected');
-  socket.emit('111', 'qwe');
-
-  socket.on('222', function (msg: any) {
-    console.log('message: ' + msg);
-  });
-});
+createRoutes(app, io);
 
 http.listen(process.env.PORT, function () {
   console.log(`Server: http://localhost:${process.env.PORT}`);
