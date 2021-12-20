@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { IUser } from '../Models/User';
 
 const verifyJWTToken = (token: string) => {
   return new Promise((resolve, reject) => {

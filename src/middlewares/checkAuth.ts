@@ -3,7 +3,7 @@ import { verifyJWTToken } from '../utils';
 import { IUser } from '../Models/User';
 
 const checkAuth = (req: any, res: any, next: any) => {
-  if (req.path === '/user/login' || req.path === '/user/registration') {
+  if (req.path === '/user/signin' || req.path === '/user/signup' || req.path === '/user/verify') {
     return next();
   }
 
@@ -15,7 +15,6 @@ const checkAuth = (req: any, res: any, next: any) => {
       next();
     })
     .catch((err) => {
-      console.log(err);
       res.status(403).json({
         message: 'Invalid auth token provided.',
       });
