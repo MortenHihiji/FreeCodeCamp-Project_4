@@ -46,7 +46,6 @@ const UserSchema = new Schema(
 );
 
 UserSchema.virtual('isOnline').get(function (this: any) {
-  console.log(new Date(), this.last_seen, differenceInMinutes(new Date(), this.last_seen) > 5);
   return differenceInMinutes(new Date(), this.last_seen) < 5;
 });
 

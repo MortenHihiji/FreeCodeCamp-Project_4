@@ -41,7 +41,6 @@ class UserController {
           message: 'User not found',
         });
       }
-      console.log(user.isOnline);
       res.json(user);
     });
   };
