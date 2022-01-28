@@ -68,21 +68,54 @@ class MessageController {
       });
   };
 
-  delete = (req: express.Request, res: express.Response) => {
-    const id: string = req.params.id;
-    MessageModel.findOneAndRemove({ _id: id })
-      .then((message) => {
-        if (message) {
-          res.json({
-            message: `Message deleted`,
-          });
-        }
-      })
-      .catch(() => {
-        res.json({
-          message: `Message not found`,
+  delete = (req: any, res: express.Response) => {
+    const id: string = req.query.id;
+    const userId: string = req.user._id;
+
+    MessageModel.findById(id, (err: any, message: any) => {
+      if (err || !message) {
+        return res.status(404).json({
+          status: 'success',
+          message: `Message deleted`,
         });
-      });
+      }
+
+      if (message.user.toString() === userId) {
+        const dialogId = message.dialog;
+        MessageModel.findOne(
+          { dialog: dialogId },
+          {},
+          { sort: { created_at: -1 } },
+          (err, lastMessage) => {
+            if (err) {
+              res.status(500).json({
+                status: 'error',
+                message: err,
+              });
+            }
+
+            DialogModel.findById(dialogId, (err: any, dialog: any) => {
+              if (err) {
+                res.status(500).json({
+                  status: 'error',
+                  message: err,
+                });
+              }
+
+              dialog.lastMessage = lastMessage;
+              dialog.save();
+            });
+          },
+        );
+
+        message.remove();
+
+        return res.json({
+          status: 'success',
+          message: `Message deleted`,
+        });
+      }
+    });
   };
 }
 
