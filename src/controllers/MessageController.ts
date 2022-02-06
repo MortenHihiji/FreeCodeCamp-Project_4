@@ -10,8 +10,16 @@ class MessageController {
     this.io = io;
   }
 
-  index = (req: express.Request, res: express.Response) => {
+  index = (req: any, res: express.Response) => {
     const dialogId: any = req.query.dialog;
+    const userId: any = req.user._id;
+
+    console.log(userId, dialogId);
+
+    MessageModel.updateMany(
+      { dialog: dialogId, user: { $ne: userId } },
+      { $set: { readed: true } },
+    );
 
     MessageModel.find({ dialog: dialogId })
       .populate(['dialog', 'user'])
@@ -31,6 +39,7 @@ class MessageController {
     const postData = {
       text: req.body.text,
       dialog: req.body.dialog_id,
+      attachments: req.body.attachments,
       user: userId,
     };
     const message = new MessageModel(postData);
